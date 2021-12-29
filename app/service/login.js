@@ -1,13 +1,38 @@
 'use strict';
 const jscode2session = 'https://api.weixin.qq.com/sns/jscode2session';
 const Service = require('egg').Service;
+const uuid = require('node-uuid');
 class UserService extends Service {
-  async login(uid) {
-    const user = {
-      a: 1,
-      uid,
+  async login(openid) {
+    let user = await this.app.mysql.get('user', { openid });
+    if (!user) {
+      const userId = uuid.v1();
+      const result = await this.app.mysql.insert('user', { openid, userId });
+      if (result.affectedRows === 1) {
+        user = {
+          userId,
+        };
+        console.log('新增用户成功:', result);
+      }
+    }
+    console.log('user信息：', user);
+    return {
+      id: user.id,
+      userId: user.userId,
+      nickName: user.nickName,
+      avatarUrl: user.avatarUrl,
+      gender: user.gender,
     };
-    return user;
+  }
+
+  async setInfo(row = {}, userId) {
+    const options = {
+      where: {
+        userId,
+      },
+    };
+    const result = await this.app.mysql.update('user', row, options);
+    return result.affectedRows === 1;
   }
 
   async getSessionKey(js_code) {
