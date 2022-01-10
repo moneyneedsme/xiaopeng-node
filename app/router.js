@@ -5,7 +5,7 @@
  */
 module.exports = app => {
   const { router, controller } = app;
-  router.get('/', controller.home.index);
-  router.post('/login', controller.login.index);
-  router.post('/setInfo', app.jwt, controller.login.setInfo);
+  router.get('/getConfig', controller.home.getConfig); // 获取配置信息
+  router.post('/login', controller.login.index); // 登录注册
+  router.post('/setInfo', app.jwt, controller.login.setInfo); // 设置用户信息
 };

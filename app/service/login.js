@@ -4,16 +4,23 @@ const Service = require('egg').Service;
 const uuid = require('node-uuid');
 class UserService extends Service {
   async login(openid) {
+    // 查询是否有用户
     let user = await this.app.mysql.get('user', { openid });
-    if (!user) {
+    if (!user) { // 没有用户就新增
       const userId = uuid.v1();
       const result = await this.app.mysql.insert('user', { openid, userId });
       if (result.affectedRows === 1) {
         user = {
           userId,
         };
+        // 用户id插入积分表point
+        this.app.mysql.insert('point', { userId });
         console.log('新增用户成功:', result);
       }
+    } else { // 有用户就查用户积分
+      const pointData = await this.app.mysql.get('point', { userId: user.userId });
+      user.point = pointData.point;
+      console.log('积分信息：', pointData);
     }
     console.log('user信息：', user);
     return {
@@ -22,6 +29,7 @@ class UserService extends Service {
       nickName: user.nickName,
       avatarUrl: user.avatarUrl,
       gender: user.gender,
+      point: user.point,
     };
   }
 

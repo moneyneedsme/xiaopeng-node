@@ -3,9 +3,15 @@
 const Controller = require('egg').Controller;
 
 class HomeController extends Controller {
-  async index() {
+  // 查询配置
+  async getConfig() {
     const { ctx } = this;
-    ctx.body = 'hi, egg';
+    const config = await ctx.service.home.getConfig();
+    if (config) {
+      ctx.success(config);
+    } else {
+      ctx.fail();
+    }
   }
 }
 
