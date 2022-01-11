@@ -13,16 +13,8 @@ class UserService extends Service {
         user = {
           userId,
         };
-        // 用户id插入积分表point
-        this.app.mysql.insert('point', { userId });
-        console.log('新增用户成功:', result);
       }
-    } else { // 有用户就查用户积分
-      const pointData = await this.app.mysql.get('point', { userId: user.userId });
-      user.point = pointData.point;
-      console.log('积分信息：', pointData);
     }
-    console.log('user信息：', user);
     return {
       id: user.id,
       userId: user.userId,
@@ -30,6 +22,7 @@ class UserService extends Service {
       avatarUrl: user.avatarUrl,
       gender: user.gender,
       point: user.point,
+      signed: !!user.signed,
     };
   }
 
