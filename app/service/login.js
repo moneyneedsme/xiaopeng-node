@@ -2,7 +2,7 @@
 const jscode2session = 'https://api.weixin.qq.com/sns/jscode2session';
 const Service = require('egg').Service;
 const uuid = require('node-uuid');
-class UserService extends Service {
+class LoginService extends Service {
   async login(openid) {
     // 查询是否有用户
     let user = await this.app.mysql.get('user', { openid });
@@ -45,4 +45,4 @@ class UserService extends Service {
   }
 }
 
-module.exports = UserService;
+module.exports = LoginService;
